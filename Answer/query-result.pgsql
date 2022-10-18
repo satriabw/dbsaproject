@@ -1,12 +1,12 @@
---Query 1
-CREATE INDEX IF NOT EXISTS filmLengthIdx on fllm (length);
-CREATE INDEX IF NOT EXIST custIdx on rental (customerId);
-CREATE INDEX IF NOT EXIST invIdx on rental (inventory_id);
-CREATE INDEX IF NOT EXISTS invfilmIdIdx on inventory (film_id);
+-- --Query 1
+-- CREATE INDEX IF NOT EXISTS filmLengthIdx on fllm (length);
+-- CREATE INDEX IF NOT EXIST custIdx on rental (customerId);
+-- CREATE INDEX IF NOT EXIST invIdx on rental (inventory_id);
+-- CREATE INDEX IF NOT EXISTS invfilmIdIdx on inventory (film_id);
 
 
 
-EXPLAIN SELECT cu.customer_id,cu.last_name 
+EXPLAIN ANALYSE SELECT cu.customer_id,cu.last_name 
 FROM customer cu
 WHERE not EXISTS
 (Select distinct r.customer_id
@@ -21,7 +21,7 @@ Where r.customer_id = cu.customer_id
 
 -- Query 2 (2 Options)
 
-EXPLAIN SELECT country.country_id, country.country
+EXPLAIN ANALYZE SELECT country.country_id, country.country
 FROM
     (
         SELECT city.country_id, city.city_id, COUNT(customer.customer_id) AS n_customers
@@ -33,8 +33,8 @@ FROM
     INNER JOIN country ON country.country_id = countries_w_cities_w_at_least_more_than_1_customer.country_id
     WHERE n_customers > 1;
 
--- --Query 3
-EXPLAIN ANALYZE select customer_id, last_name
+-- -- --Query 3
+explain ANALYZE select customer_id, last_name
 from customer
 natural join
 (
@@ -47,18 +47,17 @@ from rental
  having count(*) > 1;
  
 --  --Query 4
--- EXPLAIN ANALYZE 
-SELECT customer_id, last_name
+EXPLAIN ANALYZE 
+SELECT c.customer_id, c.last_name
 FROM (
-SELECT DISTINCT fc.category_id, c.customer_id, c.last_name
-FROM customer c
-INNER JOIN rental r on r.customer_id = c.customer_id
+SELECT DISTINCT on(fc.category_id) fc.category_id, r.customer_id
+FROM rental r
 INNER JOIN inventory i on i.inventory_id = r.inventory_id
 INNER JOIN film f on i.film_id = f.film_id
 INNER JOIN film_category fc on fc.film_id = f.film_id
---INNER JOIN category ct on ct.category_id = fc.category_id
-) inner_query
-GROUP BY customer_id, last_name
+) inner_query, customer c
+WHERE c.customer_id = inner_query.customer_id
+GROUP BY c.customer_id
 HAVING count(category_id)  = (
     SELECT count(category_id) FROM category
 );
