@@ -47,10 +47,10 @@ from rental
  having count(*) > 1;
  
 --  --Query 4
-EXPLAIN ANALYZE 
-SELECT c.customer_id, c.last_name
+
+EXPLAIN ANALYZE SELECT c.customer_id, c.last_name
 FROM (
-SELECT DISTINCT on(fc.category_id) fc.category_id, r.customer_id
+SELECT DISTINCT fc.category_id, r.customer_id
 FROM rental r
 INNER JOIN inventory i on i.inventory_id = r.inventory_id
 INNER JOIN film f on i.film_id = f.film_id
