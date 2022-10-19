@@ -1,26 +1,35 @@
 -- --Query 1
--- CREATE INDEX IF NOT EXISTS filmLengthIdx on fllm (length);
--- CREATE INDEX IF NOT EXIST custIdx on rental (customerId);
--- CREATE INDEX IF NOT EXIST invIdx on rental (inventory_id);
--- CREATE INDEX IF NOT EXISTS invfilmIdIdx on inventory (film_id);
+DROP INDEX IF EXISTS filmLengthIdx;
+DROP INDEX IF EXISTS custIdx;
+DROP INDEX IF EXISTS invIdx;
+DROP INDEX IF EXISTS invfilmIdIdx;
+DROP INDEX IF EXISTS idx_film_length_bigger_180;
+--CREATE INDEX IF NOT EXISTS filmLengthIdx on fllm (length);
+CREATE INDEX IF NOT EXISTS custIdx on rental (customer_id);
+CREATE INDEX IF NOT EXISTS invIdx on rental (inventory_id);
+CREATE INDEX IF NOT EXISTS invfilmIdIdx on inventory (film_id);
+CREATE INDEX IF NOT EXISTS idx_film_length_bigger_180 ON film(length) WHERE length >= 180;
 
 
-
-EXPLAIN ANALYSE SELECT cu.customer_id,cu.last_name 
+EXPLAIN ANALYSE 
+WITH films_longer_than_180 AS (
+    SELECT film_id FROM film WHERE length >= 180
+)
+SELECT cu.customer_id,cu.last_name 
 FROM customer cu
 WHERE not EXISTS
 (Select distinct r.customer_id
-From film f
+From films_longer_than_180 f
 	Inner Join inventory i
 	on f.film_id = i.film_id
- 	and f.length >= 180
  	Inner Join rental r
  	on i.inventory_id = r.inventory_id
 Where r.customer_id = cu.customer_id 
 );
 
 -- Query 2 (2 Options)
-
+DROP INDEX IF EXISTS idx_customer_address_id;
+CREATE INDEX IF NOT EXISTS idx_customer_address_id ON customer(address_id);
 EXPLAIN ANALYZE SELECT country.country_id, country.country
 FROM
     (
