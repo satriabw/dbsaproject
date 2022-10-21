@@ -10,6 +10,8 @@ Drop index film_film_id_idx,inventory_film_id_idx,inventory_inventory_id_idx
 ,rental_inventory_id_idx,rental_customer_id_idx; --,film_length_idx
 
 -- Indexes query 2
+Set enable_hashjoin=off;
+
 CREATE INDEX IF NOT EXISTS customer_address_id_idx ON customer USING Btree (address_id);
 CREATE INDEX IF NOT EXISTS address_address_id_idx ON address USING Btree (address_id);
 CREATE INDEX IF NOT EXISTS country_country_id_idx ON country USING Btree (country_id);
