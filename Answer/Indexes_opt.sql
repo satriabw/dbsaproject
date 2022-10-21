@@ -10,14 +10,14 @@ Drop index film_film_id_idx,inventory_film_id_idx,inventory_inventory_id_idx
 ,rental_inventory_id_idx,rental_customer_id_idx; --,film_length_idx
 
 -- Indexes query 2
-CREATE INDEX IF NOT EXISTS customer_address_id_idx ON customer USING BRIN (address_id);
-CREATE INDEX IF NOT EXISTS address_address_id_idx ON address USING BRIN (address_id);
-CREATE INDEX IF NOT EXISTS country_country_id_idx ON country USING BRIN (country_id);
+CREATE INDEX IF NOT EXISTS customer_address_id_idx ON customer USING Btree (address_id);
+CREATE INDEX IF NOT EXISTS address_address_id_idx ON address USING Btree (address_id);
+CREATE INDEX IF NOT EXISTS country_country_id_idx ON country USING Btree (country_id);
 -- CREATE INDEX city_country_id_idx ON city USING BRIN (country_id);
 -- CREATE INDEX city_city_id_idx ON city USING BRIN (city_id);
-Create INDEX IF NOT EXISTS city_idx ON city (city_id,country_id);
+Create INDEX IF NOT EXISTS city_idx ON city Using Btree(city_id,country_id);
 -- Create INDEX address_idx ON address (address_id,city_id);
-CREATE INDEX IF NOT EXISTS address_city_id_idx ON address USING BRIN (city_id);
+CREATE INDEX IF NOT EXISTS address_city_id_idx ON address USING Btree (city_id);
 
 Drop index customer_address_id_idx,address_address_id_idx,
 country_country_id_idx,city_idx,address_city_id_idx;
